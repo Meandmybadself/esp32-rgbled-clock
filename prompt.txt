@@ -1,0 +1,59 @@
+Can you make an Arduino ESP32 application composed of the following classes:
+
+Class - DailyEvent
+A class that represents an event that occurs daily at a specific time.  It has the following properties, accepted via constructor
+- `char *name` - the name of the event
+- `int hour` - the hour of the day (0-23)
+- `int minute` - the minute of the hour (0-59)
+- `int second` - the second of the minute (0-59)
+- `uint8_t days` - a bitfield of the days of the week (0-6) that the event occurs on.  0 is Sunday, 1 is Monday, etc.
+and the following methods:
+- bool occursToday() - returns true if the event occurs today
+
+Class - TimeUtils
+Its constructor should accept the following parameters:
+- gmtOffsetSeconds - the number of seconds to offset the time by
+
+Has the following methods:
+- syncTime() - Connects to a wifi access point, syncs the time with an NTP server, disconnects from the wifi access point, and sets the time on the ESP32.
+- getDayOfWeek() - returns the day of the week (0-6) that the ESP32 is currently set to.  0 is Sunday, 1 is Monday, etc.
+- getHour() - returns the hour of the day (0-23) that the ESP32 is currently set to.
+- getMinute() - returns the minute of the hour (0-59) that the ESP32 is currently set to.
+- getSecond() - returns the second of the minute (0-59) that the ESP32 is currently set to.
+
+
+Class - Calendar
+Has the following methods:
+- addEvent(DailyEvent event) - adds an event to the calendar
+- getNextEvent() - returns the next event that will occur.  If there are no events in the calendar, it returns null.
+- getMinutesToNextEvent() - returns the number of minutes until the next event occurs.  If there are no events in the calendar, it returns -1.
+
+Class - NeoPixelPixel
+Constructor takes the following parameters:
+- Adafruit_NeoPixel *strip - a pointer to the NeoPixel strip
+- int pixelNum - the pixel number on the strip
+- uint32_t color - the color of the pixel
+- int brightness - the brightness of the pixel (0-255)
+- int fadeSpeed - the speed at which the pixel fades in and out (0-255)
+- int state - the state of the pixel 0-off, 1-on, 2-blinking
+having the following methods:
+- setState(int state) - sets the state of the pixel
+- setBrightness(int brightness) - immediately sets the brightness of the pixel
+- getBrightness() - returns the brightness of the pixel
+
+Class - LEDClock
+A class that controls a 12 pixel RGB LED ring.
+
+As part of its setup(), it should:
+- Initialize the Calendar instance
+- Add a sample event to the calendar
+- Initialize the NeoPixel strip
+- Initialize the NeoPixel pixels using NeoPixelPixel
+- Initialize the TimeUtils class
+- Sync the time
+
+As part of its loop(), it should:
+- Get the next event from the calendar
+- If there is a next event & its tiem is within 12 minutes, set the state of the number pixels to the amount of minutes until the event starts
+- If there is a next event & its time is within 1 minute, set the state of all pixels to blinking
+- If the amount of time is greater than 12 minutes, set the state of all pixels to off
