@@ -8,7 +8,6 @@ const times = [
 ]
 
 app.get('/', async (_req, res) => {
-
     const numOfSecondsUntilNextEvent = times.reduce((acc, time) => {
         const secondsUntilNextEvent = (time - Date.now()) / 1000
         if (secondsUntilNextEvent > 0 && secondsUntilNextEvent < acc.seconds) {
