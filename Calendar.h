@@ -1,14 +1,12 @@
 #include "DailyEvent.h"
-#include "TimeUtils.h"
 #include <Arduino.h>
 
 const long gmtOffsetInSeconds = -18000;
 
-TimeUtils timeUtils(gmtOffsetInSeconds);
-
 class Calendar {
 public:
-  void addEvent(const char* label, const uint8_t hour, const uint8_t minute, const uint8_t seconds, const uint8_t days) {
+  void addEvent(const char *label, const uint8_t hour, const uint8_t minute,
+                const uint8_t seconds, const uint8_t days) {
     if (eventCount < MAX_EVENTS) {
       events[eventCount] = DailyEvent(label, hour, minute, seconds, days);
       eventCount++;
@@ -22,11 +20,11 @@ public:
     return nullptr;
   }
 
-  int32_t minutesToNextEvent(TimeUtils &timeUtils) {
+  int32_t minutesToNextEvent() {
     int32_t minMinutesToNextEvent = INT32_MAX;
 
     for (uint8_t i = 0; i < eventCount; i++) {
-      int32_t minutesToEvent = calculateMinutesToEvent(timeUtils, events[i]);
+      int32_t minutesToEvent = calculateMinutesToEvent(events[i]);
       if (minutesToEvent < minMinutesToNextEvent) {
         minMinutesToNextEvent = minutesToEvent;
       }
@@ -39,10 +37,11 @@ private:
   static const uint8_t MAX_EVENTS = 10;
   DailyEvent events[MAX_EVENTS];
   uint8_t eventCount = 0;
-  int32_t calculateMinutesToEvent(TimeUtils &timeUtils, DailyEvent &event) {
-    uint8_t currentDayOfWeek = timeUtils.getDayOfWeek();
-    uint8_t currentHour = timeUtils.getHour();
-    uint8_t currentMinute = timeUtils.getMinute();
+  int32_t calculateMinutesToEvent(DailyEvent &event) {
+
+    uint8_t currentDayOfWeek = weekday(TIME);
+    uint8_t currentHour = hour(TIME);
+    uint8_t currentMinute = minute(TIME);
 
     for (uint8_t dayOffset = 0; dayOffset < 7; dayOffset++) {
       uint8_t dayToCheck = (currentDayOfWeek + dayOffset) % 7;
